@@ -187,3 +187,4 @@ bq extract --destination_format=PARQUET \
 - **TABLE_STORAGE region** — Must use `` `project`.`region-REGION`.INFORMATION_SCHEMA.TABLE_STORAGE `` with explicit region qualifier.
 - **Cold table detection** — Uses two separate BigQuery queries (TABLE_STORAGE + JOBS) merged in Python, since cross-resource JOINs between these views are not supported.
 - **New tables** — TABLE_STORAGE metadata can take ~10 minutes to reflect newly created tables.
+- **Query truncation** — `INFORMATION_SCHEMA.JOBS` silently truncates the `query` column at ~1 MB (~900,000 characters). `get_inefficient_queries` detects truncation and recovers the full query text via the BigQuery Jobs API (`bq_client.get_job(job_id).query`), falling back to the truncated version if the API call fails. A `truncated: bool` flag is included in each returned row so the optimizer can acknowledge incomplete SQL rather than generating invalid rewrites.
