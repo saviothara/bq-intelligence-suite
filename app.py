@@ -107,6 +107,12 @@ with st.sidebar:
 
 
 # ── Tool implementations ───────────────────────────────────────────────────────
+
+# INFORMATION_SCHEMA.JOBS silently truncates the query column at ~1 MB.
+# Flag anything >= 900 KB as potentially truncated and attempt a Jobs API fetch.
+_BQ_QUERY_TRUNCATION_LIMIT = 900_000
+
+
 def get_inefficient_queries(bq_client, region, limit=4, hours_back=168):
     from datetime import datetime, timezone
     sql = f"""
@@ -134,9 +140,22 @@ def get_inefficient_queries(bq_client, region, limit=4, hours_back=168):
         result = job.result()
         rows  = []
         for row in result:
+            query_text = row.query or ""
+            truncated  = len(query_text) >= _BQ_QUERY_TRUNCATION_LIMIT
+
+            # Fetch full query text via Jobs API when truncation is detected
+            if truncated:
+                try:
+                    full_job   = bq_client.get_job(row.job_id)
+                    query_text = full_job.query or query_text
+                    truncated  = False
+                except Exception:
+                    pass  # fall back to truncated version
+
             rows.append({
                 "job_id":                   row.job_id,
-                "query":                    row.query,
+                "query":                    query_text,
+                "truncated":                truncated,
                 "total_bytes_processed":    row.total_bytes_processed,
                 "total_bytes_processed_gb": round(row.total_bytes_processed / (1024 ** 3), 4),
                 "total_slot_ms":            row.total_slot_ms,
