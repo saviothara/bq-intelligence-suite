@@ -691,18 +691,26 @@ def _ascii_safe(obj):
 
 
 def _safe_messages(messages):
-    """Convert a list of messages (dicts or SDK objects) to ASCII-safe plain dicts."""
+    """Convert a list of messages (dicts or SDK objects) to ASCII-safe plain dicts.
+
+    Uses a JSON round-trip (json.dumps → json.loads) before _ascii_safe() so that
+    nested Pydantic objects inside tool_calls are fully flattened to plain Python
+    types first — preventing _ascii_safe() from silently skipping unrecognised objects.
+    """
     result = []
     for msg in messages:
-        if isinstance(msg, dict):
-            result.append(_ascii_safe(msg))
-        else:
+        if not isinstance(msg, dict):
             # OpenAI SDK ChatCompletionMessage object — serialise to dict first
             try:
-                d = msg.model_dump()          # pydantic v2
+                msg = msg.model_dump()          # pydantic v2
             except AttributeError:
-                d = msg.dict()                # pydantic v1
-            result.append(_ascii_safe(d))
+                msg = msg.dict()                # pydantic v1
+        # JSON round-trip guarantees all nested structures become plain Python types
+        try:
+            msg = json.loads(json.dumps(msg, default=str))
+        except Exception:
+            pass
+        result.append(_ascii_safe(msg))
     return result
 
 
@@ -1666,39 +1674,38 @@ Generate a polished, styled HTML report with these sections:
 
    Directly below the average health score card, render a small "How is this calculated?" note:
    "Each user receives a 0-100 score built from three components:
-    💸 Cost (0-40 pts): inversely proportional to spend relative to the highest spender in the period.
+    [Cost] (0-40 pts): inversely proportional to spend relative to the highest spender in the period.
        The top spender scores 0; a user spending half as much scores 20.
-    🔧 Query Efficiency (0-30 pts): inversely proportional to avg GB scanned per query relative to
+    [Opt] Query Efficiency (0-30 pts): inversely proportional to avg GB scanned per query relative to
        the worst query writer. The most wasteful queries score 0; lean, targeted queries score up to 30.
-    📈 Anomaly (0-30 pts): based on week-over-week spend change.
+    [Anomaly] (0-30 pts): based on week-over-week spend change.
        GREEN (stable) = 30 pts | AMBER (1.5x-3x spike) = 15 pts | RED (>3x spike) = 0 pts | New user = 10 pts.
    The project average is the mean of all individual scores. A score below 60 signals the project
    has users requiring attention. A score above 80 means the project is healthy across all dimensions."
    Style this as a small muted info box (light grey background, small font) beneath the avg score card.
 
-2. PRIORITY ACTIONS  🚨
+2. PRIORITY ACTIONS
    A ranked action list (highest impact first) based on cross-references.
    Each action item must include:
-   - Severity badge (🔴 Critical / 🟡 High / 🔵 Medium)
+   - Severity badge ([RED] Critical / [AMBER] High / [BLUE] Medium)
    - Who or what is affected
    - Why it was flagged (cross-reference + health score)
    - Specific recommended action
 
-3. USER LEADERBOARD  👥  ← health score is the primary column
+3. USER LEADERBOARD  (health score is the primary column)
    One table row per user, sorted by health_score ascending (worst first):
-   🏥 Score | Label | User | Cost (USD) | Avg GB/Query | Anomaly | \
-💸 Cost pts | 🔧 Opt pts | 📈 Anomaly pts
+   Score | Label | User | Cost (USD) | Avg GB/Query | Anomaly | Cost pts | Opt pts | Anomaly pts
    - Render the score as a visual progress bar (HTML div with width = score%)
      coloured: red 0-39, orange 40-59, yellow 60-79, green 80-100
    - Add a tooltip or small breakdown showing the three component scores \
-(e.g. "💸 18 + 🔧 22 + 📈 0 = 40")
+(e.g. "Cost 18 + Opt 22 + Anomaly 0 = 40")
    - Rows with score < 40: red background
    - Rows with score 40-59: orange background
    - Rows with score 60-79: yellow background
    - Rows with score 80+: green background
    - For Critical/Needs Attention users: show their top queries inline below the row
 
-4. TABLE HEAT MAP  🗂️
+4. TABLE HEAT MAP
    Rank | Table | Queries | Users | Assoc. Cost | In Expensive Queries?
    Flag tables found in both hot-tables and expensive query text.
 
@@ -1708,7 +1715,7 @@ Generate a polished, styled HTML report with these sections:
    - Attribution: biggest spender and cost share %
    - Anomaly: RED/AMBER count, highest spike ratio
 
-6. RECOMMENDATIONS  💡
+6. RECOMMENDATIONS
    Unified, prioritised list grouped by theme:
    Cost Reduction | Query Optimization | Table Design | Governance
 
