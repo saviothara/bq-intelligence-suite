@@ -1664,6 +1664,18 @@ Generate a polished, styled HTML report with these sections:
    - Number of hot tables identified
    Include the period analysed and project ID.
 
+   Directly below the average health score card, render a small "How is this calculated?" note:
+   "Each user receives a 0-100 score built from three components:
+    💸 Cost (0-40 pts): inversely proportional to spend relative to the highest spender in the period.
+       The top spender scores 0; a user spending half as much scores 20.
+    🔧 Query Efficiency (0-30 pts): inversely proportional to avg GB scanned per query relative to
+       the worst query writer. The most wasteful queries score 0; lean, targeted queries score up to 30.
+    📈 Anomaly (0-30 pts): based on week-over-week spend change.
+       GREEN (stable) = 30 pts | AMBER (1.5x-3x spike) = 15 pts | RED (>3x spike) = 0 pts | New user = 10 pts.
+   The project average is the mean of all individual scores. A score below 60 signals the project
+   has users requiring attention. A score above 80 means the project is healthy across all dimensions."
+   Style this as a small muted info box (light grey background, small font) beneath the avg score card.
+
 2. PRIORITY ACTIONS  🚨
    A ranked action list (highest impact first) based on cross-references.
    Each action item must include:
