@@ -435,7 +435,7 @@ def get_table_storage_stats(bq_client, project_id, region, min_gb=0.1, limit=25)
         return {"error": str(exc), "tables": [], "count": 0}
 
 
-def get_cold_tables(bq_client, project_id, region, min_days_unqueried=90, min_gb=1, limit=20):
+def get_cold_tables(bq_client, project_id, region, min_days_unqueried=90, min_gb=5, limit=20):
     """Find tables not queried recently - prime candidates for GCS archiving.
 
     Runs two separate queries (TABLE_STORAGE and JOBS) and merges in Python
@@ -918,7 +918,7 @@ def build_tool_schemas(cfg=None):
                     "type": "object",
                     "properties": {
                         "min_days_unqueried": {"type": "integer", "description": f"Days without a query to flag as cold (default 90)"},
-                        "min_gb":             {"type": "number",  "description": "Minimum table size in GB (default 1)"},
+                        "min_gb":             {"type": "number",  "description": "Minimum table size in GB (default 5)"},
                         "limit":              {"type": "integer", "description": "Number of tables to return (default 20)"},
                     },
                     "required": []
@@ -2021,7 +2021,7 @@ Call save_html_report with the complete HTML when done.\
 
                 elif name == "get_cold_tables":
                     min_days = inputs.get("min_days_unqueried", lookback_days)
-                    min_gb   = inputs.get("min_gb", 1)
+                    min_gb   = inputs.get("min_gb", 5)
                     limit    = inputs.get("limit", 20)
                     status_container.info(f"Finding tables cold for {min_days}+ days…")
                     result = get_cold_tables(bq_client, project_id, bq_region, min_days, min_gb, limit)
@@ -2299,7 +2299,7 @@ def run_chat_turn(api_history, bq_client, fuelix_client,
 
             elif name == "get_cold_tables":
                 min_days = inputs.get("min_days_unqueried", lookback_days)
-                min_gb   = inputs.get("min_gb", 1)
+                min_gb   = inputs.get("min_gb", 5)
                 limit    = inputs.get("limit", 20)
                 result   = get_cold_tables(bq_client, project_id, bq_region, min_days, min_gb, limit)
                 icon, summary = "🧊", f"{result.get('count', 0)} cold tables, ${result.get('total_annual_savings_if_all_archived_usd', 0):,.2f} annual savings"
