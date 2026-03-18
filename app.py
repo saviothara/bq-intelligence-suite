@@ -2393,8 +2393,8 @@ with col_main:
 with tab_opt:
     st.subheader("⚡ Query Optimizer")
     st.markdown(
-        "Finds your most expensive BigQuery queries, suggests SQL optimizations, "
-        "validates them with dry runs, and produces a downloadable HTML report."
+        "Finds your most expensive queries, rewrites them with AI, validates savings via dry run, "
+        "and recovers truncated queries (>1 MB) via the Jobs API — producing a complete, accurate HTML report."
     )
 
     run_clicked = st.button("🚀 Run Optimization", disabled=not ready, use_container_width=False)
@@ -2451,8 +2451,8 @@ with tab_opt:
 with tab_cost:
     st.subheader("💰 Cost Attribution")
     st.markdown(
-        "Breaks down BigQuery spend by user/team, identifying who runs the most "
-        "expensive queries and their estimated on-demand costs ($5/TB)."
+        "Breaks down BigQuery spend by user with query counts, average GB per query, and a table heat map "
+        "showing which datasets are driving the most cost — so you know exactly who to talk to and about what."
     )
 
     attr_clicked = st.button("💰 Run Cost Attribution", disabled=not ready, use_container_width=False)
@@ -2509,9 +2509,9 @@ with tab_cost:
 with tab_anomaly:
     st.subheader("🚨 Anomaly Detector")
     st.markdown(
-        "Compares each user's BigQuery spend over the last N days against the equal prior window. "
-        "Flags users whose cost doubled (🟡 AMBER) or tripled (🔴 RED), then drills into their "
-        "top queries to explain what drove the spike."
+        "Compares each user's spend week-over-week and flags RED (>3x spike), AMBER (1.5x-3x), and NEW_USER activity — "
+        "catching runaway jobs, misconfigured pipelines, and new bot users running expensive queries "
+        "before they become a surprise on your bill."
     )
 
     anomaly_clicked = st.button("🚨 Run Anomaly Detection", disabled=not ready, use_container_width=False)
@@ -2568,9 +2568,8 @@ with tab_anomaly:
 with tab_super:
     st.subheader("🧠 Health Supervisor Agent")
     st.markdown(
-        "Runs all three sub-agents, **cross-references their findings**, and produces a single "
-        "unified **BigQuery Health Dashboard**. Surfaces insights no individual agent can find alone - "
-        "users who are simultaneously the biggest spenders, worst optimizers, *and* anomaly spikes."
+        "Cross-references cost, query efficiency, and anomaly signals into a single 0-100 health score per user — "
+        "surfacing users who appear in multiple risk categories that no single analysis would catch alone."
     )
 
     st.info(
@@ -2637,9 +2636,8 @@ with tab_super:
 with tab_storage:
     st.subheader("💾 Storage Advisor")
     st.markdown(
-        "Finds cold tables wasting money in active storage, query anti-patterns "
-        "(missing partition filters, wildcard scans), and produces a prioritised "
-        "cost-reduction report with ready-to-run `bq extract` commands."
+        "Scans for cold tables (unqueried 90+ days), wildcard table scans, and missing partition filters — "
+        "then estimates GCS archive savings, so you know exactly which tables to move and how much you'll save."
     )
 
     st.info(
