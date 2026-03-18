@@ -29,7 +29,6 @@ Natural language interface available on every tab. Ask questions like:
 - *"Show me their top 3 queries"*
 - *"Any anomalies? Show me a summary"*
 - *"Which tables should I archive?"*
-- *"Revoke table access for user@example.com"*
 
 Multi-turn conversation is preserved within the session. The chat agent has access to all 12 data tools and supports access revocation with a confirm/cancel safety flow.
 
