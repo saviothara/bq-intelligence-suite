@@ -8,13 +8,20 @@ An agentic AI-powered Streamlit application for BigQuery cost optimization, anom
 
 ### 5 Analysis Tabs
 
-| Tab | Purpose |
-|-----|---------|
-| ⚡ **Query Optimizer** | Finds your most expensive queries, suggests SQL rewrites, validates savings with BigQuery dry runs, exports HTML report |
-| 💰 **Cost Attribution** | Per-user spend breakdown, query counts, avg/max GB scanned, table heat map |
-| 🚨 **Anomaly Detector** | Week-over-week spend spike detection per user — flags RED / AMBER / NEW_USER |
-| 🧠 **Health Supervisor** | Unified dashboard combining cost, optimization, and anomaly signals into a 0–100 health score per user |
-| 💾 **Storage Advisor** | Identifies cold/unqueried tables, partition filter violations, wildcard scans, and estimates GCS archiving savings |
+**⚡ Query Optimizer**
+Finds your most expensive queries, rewrites them with AI, validates savings via dry run, and recovers truncated queries (>1 MB) via the Jobs API — producing a complete, accurate HTML report.
+
+**💰 Cost Attribution**
+Breaks down BigQuery spend by user with query counts, average GB per query, and a table heat map showing which datasets are driving the most cost — so you know exactly who to talk to and about what.
+
+**🚨 Anomaly Detector**
+Compares each user's spend week-over-week and flags RED (>3x spike), AMBER (1.5x–3x), and NEW_USER activity — catching runaway jobs, misconfigured pipelines, and new bot users running expensive queries before they become a surprise on your bill.
+
+**🧠 Health Supervisor**
+Cross-references cost, query efficiency, and anomaly signals into a single 0–100 health score per user — surfacing users who appear in multiple risk categories that no single analysis would catch alone.
+
+**💾 Storage Advisor**
+Scans for cold tables (unqueried 90+ days), wildcard table scans, and missing partition filters — then estimates GCS archive savings, so you know exactly which tables to move and how much you'll save.
 
 ### 💬 Persistent Chat Panel
 Natural language interface available on every tab. Ask questions like:
