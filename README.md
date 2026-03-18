@@ -30,7 +30,7 @@ Natural language interface available on every tab. Ask questions like:
 - *"Any anomalies? Show me a summary"*
 - *"Which tables should I archive?"*
 
-Multi-turn conversation is preserved within the session. The chat agent has access to all 12 data tools and supports access revocation with a confirm/cancel safety flow.
+Multi-turn conversation is preserved within the session. The chat agent has access to all data tools.
 
 ---
 
@@ -49,14 +49,20 @@ col_main (3/4 width)                col_chat (1/4 width)
 
 Each tab runs an independent agentic loop against the Fuel IX LLM proxy, calling BigQuery tool functions and iterating until a final answer is produced.
 
-| Agent | Tools | Max Iterations |
-|-------|-------|----------------|
-| `run_optimizer()` | get_inefficient_queries, dry_run_query, save_html_report | 25 |
-| `run_cost_attribution()` | get_cost_attribution, get_user_top_queries, get_most_hit_tables, save_html_report | 25 |
-| `run_anomaly_detector()` | get_spend_anomalies, get_user_top_queries, save_html_report | 25 |
-| `run_supervisor()` | all 6 data tools + save_html_report | 25 |
-| `run_storage_advisor()` | get_table_storage_stats, get_cold_tables, get_partition_filter_violations, get_wildcard_scan_queries, get_most_hit_tables, save_html_report | 25 |
-| `run_chat_turn()` | all 12 tools | 15 |
+| Tool | Optimizer | Cost | Anomaly | Supervisor | Storage | Chat |
+|------|:---------:|:----:|:-------:|:----------:|:-------:|:----:|
+| `get_inefficient_queries` | ✅ | | | ✅ | | ✅ |
+| `get_cost_attribution` | | ✅ | | ✅ | | ✅ |
+| `get_most_hit_tables` | | ✅ | | ✅ | ✅ | ✅ |
+| `get_spend_anomalies` | | | ✅ | ✅ | | ✅ |
+| `get_user_top_queries` | | ✅ | ✅ | ✅ | | ✅ |
+| `get_user_health_scores` | | | | ✅ | | ✅ |
+| `get_table_storage_stats` | | | | | ✅ | ✅ |
+| `get_cold_tables` | | | | | ✅ | ✅ |
+| `get_partition_filter_violations` | | | | | ✅ | ✅ |
+| `get_wildcard_scan_queries` | | | | | ✅ | ✅ |
+| `dry_run_query` | ✅ | | | | | ✅ |
+| `save_html_report` | ✅ | ✅ | ✅ | ✅ | ✅ | |
 
 ### Data Sources
 
