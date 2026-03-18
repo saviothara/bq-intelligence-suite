@@ -2451,8 +2451,8 @@ with tab_opt:
 with tab_cost:
     st.subheader("💰 Cost Attribution")
     st.markdown(
-        "Breaks down BigQuery spend by user with query counts, average GB per query, and a table heat map "
-        "showing which datasets are driving the most cost — so you know exactly who to talk to and about what."
+        "Ranks users by total BigQuery spend (USD), showing query count, average GB per query, and max GB on a single query — "
+        "plus a table heat map revealing which datasets are driving the most cost, so you know exactly who to talk to and about what."
     )
 
     attr_clicked = st.button("💰 Run Cost Attribution", disabled=not ready, use_container_width=False)

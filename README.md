@@ -12,7 +12,7 @@ An agentic AI-powered Streamlit application for BigQuery cost optimization, anom
 Finds your most expensive queries, rewrites them with AI, validates savings via dry run, and recovers truncated queries (>1 MB) via the Jobs API — producing a complete, accurate HTML report.
 
 **💰 Cost Attribution**
-Breaks down BigQuery spend by user with query counts, average GB per query, and a table heat map showing which datasets are driving the most cost — so you know exactly who to talk to and about what.
+Ranks users by total BigQuery spend (USD), showing query count, average GB per query, and max GB on a single query — plus a table heat map revealing which datasets are driving the most cost, so you know exactly who to talk to and about what.
 
 **🚨 Anomaly Detector**
 Compares each user's spend week-over-week and flags RED (>3x spike), AMBER (1.5x–3x), and NEW_USER activity — catching runaway jobs, misconfigured pipelines, and new bot users running expensive queries before they become a surprise on your bill.
